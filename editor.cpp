@@ -9,7 +9,6 @@
 
 namespace fs = std::filesystem;
 
-// Terminal implementation
 static struct termios orig_termios;
 
 void Terminal::enterRawMode() {
@@ -54,7 +53,6 @@ std::pair<int, int> Terminal::getWindowSize() {
     return {ws.ws_row, ws.ws_col};
 }
 
-// SyntaxHighlighter implementation
 void SyntaxHighlighter::addRule(const std::string& pattern, const std::string& color) {
     rules.push_back({std::regex(pattern), color});
 }
@@ -79,7 +77,6 @@ std::string SyntaxHighlighter::highlight(const std::string& line) {
     return result;
 }
 
-// Buffer implementation
 Buffer::Buffer(const std::string& path) : filepath(path) {
     load();
 }
@@ -135,7 +132,6 @@ void Buffer::load() {
     if (lines.empty()) lines.push_back("");
 }
 
-// PluginManager implementation
 void PluginManager::loadPlugin(std::shared_ptr<Plugin> plugin) {
     plugins[plugin->getName()] = plugin;
     plugin->onLoad();
@@ -157,7 +153,6 @@ void PluginManager::notifyBufferChange() {
     }
 }
 
-// FileExplorer implementation
 void FileExplorer::scanDirectory(const std::string& path) {
     files.clear();
     try {
@@ -186,12 +181,10 @@ std::string FileExplorer::getSelected() const {
     return "";
 }
 
-// Editor implementation
 Editor::Editor() {
     Terminal::enterRawMode();
     buffers.push_back(std::make_shared<Buffer>());
     
-    // Basic C++ syntax highlighting
     highlighter.addRule(R"(\b(int|void|return|if|else|for|while|class)\b)", "\x1b[34m");
     highlighter.addRule(R"(".*?")", "\x1b[32m");
     highlighter.addRule(R"(//.*)", "\x1b[90m");
@@ -233,7 +226,6 @@ void Editor::processKeypress() {
     if (c == ':') {
         commandMode = true;
     } else if (c == 27) {
-        // ESC key
     } else if (c == 127) {
         deleteChar();
     } else if (c == '\r') {
@@ -301,7 +293,6 @@ void Editor::render() {
     
     auto [rows, cols] = Terminal::getWindowSize();
     
-    // Render buffer
     for (int i = 0; i < rows - 2; i++) {
         int fileRow = i + rowOffset;
         if (fileRow < getCurrentBuffer().getLineCount()) {
